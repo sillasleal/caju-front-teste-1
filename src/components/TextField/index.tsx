@@ -35,7 +35,7 @@ const TextField = forwardRef((props: Props, ref: HTMLInputElement) => {
   return (
     <div>
       <label htmlFor={props.id}>{props.label}</label>
-      <Input ref={ref} {...props} />
+      <Input aria-label={props.label} ref={ref} {...props} />
       <TextFieldErrorMessage>{props.error}</TextFieldErrorMessage>
     </div>
   );

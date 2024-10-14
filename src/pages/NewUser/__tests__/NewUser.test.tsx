@@ -44,7 +44,7 @@ describe("NewUser", () => {
     it("should show a error message when name is empty", async () => {
       render(<NewUserPage />);
 
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Nome obrigatório")).toBeInTheDocument();
     });
@@ -53,8 +53,8 @@ describe("NewUser", () => {
       render(<NewUserPage />);
 
       const nameInput = screen.getByLabelText("Nome");
-      userEvent.type(nameInput, "Test");
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.type(nameInput, "Test");
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Nome inválido")).toBeInTheDocument();
     });
@@ -63,8 +63,8 @@ describe("NewUser", () => {
       render(<NewUserPage />);
 
       const nameInput = screen.getByLabelText("Nome");
-      userEvent.type(nameInput, "1Test Test");
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.type(nameInput, "1Test Test");
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Nome inválido")).toBeInTheDocument();
     });
@@ -73,8 +73,8 @@ describe("NewUser", () => {
       render(<NewUserPage />);
 
       const nameInput = screen.getByLabelText("Nome");
-      userEvent.type(nameInput, "Te T");
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.type(nameInput, "Te T");
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Nome inválido")).toBeInTheDocument();
     });
@@ -83,8 +83,8 @@ describe("NewUser", () => {
       render(<NewUserPage />);
 
       const nameInput = screen.getByLabelText("Nome");
-      userEvent.type(nameInput, "Test Test");
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.type(nameInput, "Test Test");
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.queryByText("Nome inválido")).not.toBeInTheDocument();
     });
@@ -94,7 +94,7 @@ describe("NewUser", () => {
     it("should show a error message when email is empty", async () => {
       render(<NewUserPage />);
 
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Email obrigatório")).toBeInTheDocument();
     });
@@ -103,9 +103,9 @@ describe("NewUser", () => {
       render(<NewUserPage />);
 
       const emailInput = screen.getByLabelText("Email");
-      userEvent.type(emailInput, "invalid_email");
+      await userEvent.type(emailInput, "invalid_email");
 
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Email inválido")).toBeInTheDocument();
     });
@@ -114,12 +114,43 @@ describe("NewUser", () => {
       render(<NewUserPage />);
 
       const emailInput = screen.getByLabelText("Email");
-      userEvent.type(emailInput, "test@test.com");
-      userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.type(emailInput, "test@test.com");
+      await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(
         await screen.queryByText("Email inválido")
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("CPF validation", () => {
+    it("should show a error message when cpf is empty", async () => {
+      render(<NewUserPage />);
+
+      await userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.findByText("CPF obrigatório")).toBeInTheDocument();
+    });
+
+    it("should show a error message when cpf is invalid", async () => {
+      render(<NewUserPage />);
+
+      const cpfInput = screen.getByLabelText("CPF");
+      await userEvent.type(cpfInput, "123.456.789-00");
+
+      await userEvent.click(screen.getByText("Cadastrar"));
+      expect(await screen.findByText("CPF invalido")).toBeInTheDocument();
+    });
+
+    it("should not show error message when cpf is valid", async () => {
+      render(<NewUserPage />);
+
+      const cpfInput = screen.getByLabelText("CPF");
+      await userEvent.type(cpfInput, "123.456.789-09");
+
+      await userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.queryByText("CPF invalido")).not.toBeInTheDocument();
     });
   });
 });
