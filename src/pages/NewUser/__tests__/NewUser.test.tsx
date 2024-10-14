@@ -10,13 +10,15 @@ jest.mock("react-router-dom", () => ({
   useHistory: jest.fn(),
 }));
 
+const NewUserPage = () => (
+  <HashRouter>
+    <NewUser />
+  </HashRouter>
+);
+
 describe("NewUser", () => {
   it("should render", () => {
-    render(
-      <HashRouter>
-        <NewUser />
-      </HashRouter>
-    );
+    render(<NewUserPage />);
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Email")).toBeInTheDocument();
     expect(screen.getByText("CPF")).toBeInTheDocument();
@@ -29,11 +31,7 @@ describe("NewUser", () => {
     (useHistory as jest.Mock).mockReturnValue(historyMock);
 
     act(() => {
-      render(
-        <HashRouter>
-          <NewUser />
-        </HashRouter>
-      );
+      render(<NewUserPage />);
     });
 
     const backButton = screen.getByLabelText("back");
@@ -42,13 +40,59 @@ describe("NewUser", () => {
     expect(historyMock.push).toHaveBeenCalledWith(routes.dashboard);
   });
 
+  describe("Name Validation", () => {
+    it("should show a error message when name is empty", async () => {
+      render(<NewUserPage />);
+
+      userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.findByText("Nome obrigatório")).toBeInTheDocument();
+    });
+
+    it("should show a error message when the name does not have at least 2 names", async () => {
+      render(<NewUserPage />);
+
+      const nameInput = screen.getByLabelText("Nome");
+      userEvent.type(nameInput, "Test");
+      userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.findByText("Nome inválido")).toBeInTheDocument();
+    });
+
+    it("should show a message error when the name starts with a number", async () => {
+      render(<NewUserPage />);
+
+      const nameInput = screen.getByLabelText("Nome");
+      userEvent.type(nameInput, "1Test Test");
+      userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.findByText("Nome inválido")).toBeInTheDocument();
+    });
+
+    it("should show a message error when one of the names has less than 2 characters", async () => {
+      render(<NewUserPage />);
+
+      const nameInput = screen.getByLabelText("Nome");
+      userEvent.type(nameInput, "Te T");
+      userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.findByText("Nome inválido")).toBeInTheDocument();
+    });
+
+    it("should not show error message when name is valid", async () => {
+      render(<NewUserPage />);
+
+      const nameInput = screen.getByLabelText("Nome");
+      userEvent.type(nameInput, "Test Test");
+      userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(await screen.queryByText("Nome inválido")).not.toBeInTheDocument();
+    });
+  });
+
   describe("Email validation", () => {
     it("should show a error message when email is empty", async () => {
-      render(
-        <HashRouter>
-          <NewUser />
-        </HashRouter>
-      );
+      render(<NewUserPage />);
 
       userEvent.click(screen.getByText("Cadastrar"));
 
@@ -56,25 +100,18 @@ describe("NewUser", () => {
     });
 
     it("should show error message when email is invalid", async () => {
-      render(
-        <HashRouter>
-          <NewUser />
-        </HashRouter>
-      );
+      render(<NewUserPage />);
 
       const emailInput = screen.getByLabelText("Email");
-      userEvent.type(emailInput, "invalid-email");
+      userEvent.type(emailInput, "invalid_email");
+
       userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.findByText("Email inválido")).toBeInTheDocument();
     });
 
     it("should not show error message when email is valid", async () => {
-      render(
-        <HashRouter>
-          <NewUser />
-        </HashRouter>
-      );
+      render(<NewUserPage />);
 
       const emailInput = screen.getByLabelText("Email");
       userEvent.type(emailInput, "test@test.com");

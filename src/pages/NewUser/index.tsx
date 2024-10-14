@@ -9,6 +9,7 @@ import * as S from "./styles";
 
 type FormData = {
   email: string;
+  employeeName: string;
 };
 
 const NewUserPage = () => {
@@ -29,7 +30,19 @@ const NewUserPage = () => {
         <IconButton onClick={() => goToHome()} aria-label="back">
           <HiOutlineArrowLeft size={24} />
         </IconButton>
-        <TextField placeholder="Nome" label="Nome" />
+        <TextField
+          {...register("employeeName", {
+            required: "Nome obrigatório",
+            pattern: {
+              value: /^(?!\d)[a-zA-Z]{2,}(?: [a-zA-Z]{2,})+$/,
+              message: "Nome inválido",
+            },
+          })}
+          id="nome"
+          placeholder="Nome"
+          label="Nome"
+          error={errors.employeeName?.message}
+        />
         <TextField
           {...register("email", {
             required: "Email obrigatório",
