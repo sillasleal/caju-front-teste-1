@@ -6,10 +6,14 @@ import Button from "~/components/Buttons";
 import { IconButton } from "~/components/Buttons/IconButton";
 import routes from "~/router/routes";
 import * as S from "./styles";
+import { useEffect } from "react";
+import { formatCPF } from "~/utils/format";
+import { validateCPF } from "~/utils/validate";
 
 type FormData = {
-  email: string;
   employeeName: string;
+  email: string;
+  cpf: string;
 };
 
 const NewUserPage = () => {
@@ -17,12 +21,20 @@ const NewUserPage = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>();
+  const cpfValue = watch("cpf");
+
   const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
   const goToHome = () => {
     history.push(routes.dashboard);
   };
+
+  useEffect(() => {
+    setValue("cpf", formatCPF(cpfValue || ""));
+  }, [cpfValue, setValue]);
 
   return (
     <S.Container>
@@ -57,7 +69,21 @@ const NewUserPage = () => {
           type="email"
           error={errors.email?.message}
         />
-        <TextField placeholder="CPF" label="CPF" />
+        <TextField
+          {...register("cpf", {
+            required: "CPF obrigatório",
+            validate: validateCPF,
+            max: 14,
+          })}
+          id="cpf"
+          placeholder="CPF"
+          label="CPF"
+          error={
+            errors.cpf && errors.cpf.type === "validate"
+              ? "CPF invalido"
+              : errors.cpf?.message
+          }
+        />
         <TextField label="Data de admissão" type="date" />
         <Button onClick={handleSubmit(onSubmit)}>Cadastrar</Button>
       </S.Card>
