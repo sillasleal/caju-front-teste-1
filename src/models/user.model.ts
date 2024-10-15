@@ -1,7 +1,7 @@
 import { IStatus } from "./status.model";
 
 export interface IUser {
-  admissionDate: Date;
+  admissionDate?: Date;
   cpf: string;
   email: string;
   employeeName: string;
