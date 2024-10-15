@@ -11,6 +11,7 @@ const allColumns = [
 
 type Props = {
   registrations?: IUser[];
+  onUpdate: (user: IUser) => void;
 };
 const Collumns = (props: Props) => {
   return (
@@ -22,7 +23,7 @@ const Collumns = (props: Props) => {
             <S.CollumContent>
               {props?.registrations?.map((registration) =>
                 registration.status === collum.status ? (
-                  <RegistrationCard data={registration} key={registration.id} />
+                  <RegistrationCard onUpdate={props.onUpdate} data={registration} key={registration.id} />
                 ) : null
               )}
             </S.CollumContent>

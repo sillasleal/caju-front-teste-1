@@ -20,3 +20,12 @@ export const getUsers = async (cpf?: string) => {
 
   return await fetch(url.toString()).then((j) => j.json());
 };
+
+export const updateUser = async (user: IUser) =>
+  await fetch(`${apiBaseURL}/registrations/${user.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  }).then((j) => j.json());

@@ -20,7 +20,7 @@ const DashboardPage = () => {
   return (
     <S.Container>
       <SearchBar onSearch={onSearch} />
-      <Collumns registrations={users} />
+      <Collumns registrations={users} onUpdate={() => onSearch()} />
     </S.Container>
   );
 };

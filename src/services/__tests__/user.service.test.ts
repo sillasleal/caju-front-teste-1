@@ -1,5 +1,5 @@
 import { IStatus } from "~/models/status.model";
-import { apiBaseURL, getUsers, saveUser } from "../user.service";
+import { apiBaseURL, getUsers, saveUser, updateUser } from "../user.service";
 
 describe("user.service", () => {
   beforeEach(() => {
@@ -85,5 +85,32 @@ describe("user.service", () => {
     expect(global.fetch).toHaveBeenCalledWith(
       `${apiBaseURL}/registrations?cpf=123.456.789-00`
     );
+  });
+
+  it("should update a user", async () => {
+    const user = {
+      id: "1",
+      employeeName: "Test User",
+      email: "test@test.com",
+      cpf: "123.456.789-00",
+      admissionDate: new Date(),
+      status: IStatus.REVIEW,
+    };
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => user,
+    });
+
+    const response = await updateUser(user);
+    expect(response).toEqual(user);
+
+    expect(global.fetch).toHaveBeenCalledWith(`${apiBaseURL}/registrations/${user.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
   });
 });
