@@ -29,3 +29,8 @@ export const updateUser = async (user: IUser) =>
     },
     body: JSON.stringify(user),
   }).then((j) => j.json());
+
+export const deleteUser = async (id: string) =>
+  await fetch(`${apiBaseURL}/registrations/${id}`, {
+    method: "DELETE",
+  }).then((j) => j.json());

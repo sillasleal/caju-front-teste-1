@@ -9,7 +9,7 @@ import {
 import { IUser } from "~/models/user.model";
 import { IStatus } from "~/models/status.model";
 import { useCallback } from "react";
-import { updateUser } from "~/services/user.service";
+import { deleteUser, updateUser } from "~/services/user.service";
 
 type Props = {
   data: IUser;
@@ -23,6 +23,10 @@ const RegistrationCard = ({ data, onUpdate }: Props) => {
     },
     [data, onUpdate]
   );
+
+  const onDelete = useCallback(() => {
+    deleteUser(data.id).then(onUpdate);
+  }, [data.id, onUpdate]);
 
   return (
     <S.Card>
@@ -58,7 +62,7 @@ const RegistrationCard = ({ data, onUpdate }: Props) => {
           Revisar novamente
         </ButtonSmall>
 
-        <HiOutlineTrash />
+        <HiOutlineTrash onClick={onDelete} aria-label="delete" />
       </S.Actions>
     </S.Card>
   );

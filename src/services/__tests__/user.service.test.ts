@@ -1,5 +1,5 @@
 import { IStatus } from "~/models/status.model";
-import { apiBaseURL, getUsers, saveUser, updateUser } from "../user.service";
+import { apiBaseURL, deleteUser, getUsers, saveUser, updateUser } from "../user.service";
 
 describe("user.service", () => {
   beforeEach(() => {
@@ -105,12 +105,34 @@ describe("user.service", () => {
     const response = await updateUser(user);
     expect(response).toEqual(user);
 
-    expect(global.fetch).toHaveBeenCalledWith(`${apiBaseURL}/registrations/${user.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${apiBaseURL}/registrations/${user.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      }
+    );
+  });
+
+  it("should delete a user", async () => {
+    const id = "1";
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => id,
     });
+
+    const response = await deleteUser(id);
+    expect(response).toEqual(id);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${apiBaseURL}/registrations/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
   });
 });
