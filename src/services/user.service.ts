@@ -11,3 +11,12 @@ export const saveUser = async (user: IUser) =>
     },
     body: JSON.stringify({ ...user, status: IStatus.REVIEW }),
   }).then((j) => j.json());
+
+export const getUsers = async (cpf?: string) => {
+  const url = new URL(`${apiBaseURL}/registrations`);
+  if (cpf) {
+    url.searchParams.append("cpf", cpf);
+  }
+
+  return await fetch(url.toString()).then((j) => j.json());
+};

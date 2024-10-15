@@ -1,6 +1,7 @@
 
 import * as S from "./styles";
 import RegistrationCard from "../RegistrationCard";
+import { IUser } from "~/models/user.model";
 
 const allColumns = [
   { status: 'REVIEW', title: "Pronto para revisar" },
@@ -9,7 +10,7 @@ const allColumns = [
 ];
 
 type Props = {
-  registrations?: any[];
+  registrations?: IUser[];
 };
 const Collumns = (props: Props) => {
   return (

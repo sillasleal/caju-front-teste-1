@@ -1,5 +1,5 @@
 import { IStatus } from "~/models/status.model";
-import { apiBaseURL, saveUser } from "../user.service";
+import { apiBaseURL, getUsers, saveUser } from "../user.service";
 
 describe("user.service", () => {
   beforeEach(() => {
@@ -37,5 +37,53 @@ describe("user.service", () => {
       },
       body: JSON.stringify(user),
     });
+  });
+
+  it("should get users", async () => {
+    const users = [
+      {
+        id: 1,
+        employeeName: "Test User",
+        email: "test@test.com",
+        cpf: "123.456.789-00",
+        admissionDate: new Date(),
+        status: IStatus.REVIEW,
+      },
+    ];
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => users,
+    });
+
+    const response = await getUsers();
+    expect(response).toEqual(users);
+
+    expect(global.fetch).toHaveBeenCalledWith(`${apiBaseURL}/registrations`);
+  });
+
+  it("should get users by cpf", async () => {
+    const users = [
+      {
+        id: 1,
+        employeeName: "Test User",
+        email: "test@test.com",
+        cpf: "123.456.789-00",
+        admissionDate: new Date(),
+        status: IStatus.REVIEW,
+      },
+    ];
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => users,
+    });
+
+    const response = await getUsers("123.456.789-00");
+    expect(response).toEqual(users);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${apiBaseURL}/registrations?cpf=123.456.789-00`
+    );
   });
 });
