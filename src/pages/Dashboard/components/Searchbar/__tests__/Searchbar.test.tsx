@@ -42,4 +42,12 @@ describe("Searchbar", () => {
     userEvent.type(input, "123.456.789-00");
     expect(onSearch).toHaveBeenCalledTimes(1);
   });
+
+  it("should call onSearch when clicks on refetch button", () => {
+    const onSearch = jest.fn();
+    render(<SearchBarComponent onSearch={onSearch} />);
+    const refetchButton = screen.getByLabelText("refetch");
+    userEvent.click(refetchButton);
+    expect(onSearch).toHaveBeenCalledTimes(1);
+  });
 });

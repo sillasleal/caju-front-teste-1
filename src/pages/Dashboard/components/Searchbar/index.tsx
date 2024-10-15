@@ -48,7 +48,7 @@ export const SearchBar = (props: SearchBarProps) => {
         value={cpf}
       />
       <S.Actions>
-        <IconButton aria-label="refetch">
+        <IconButton aria-label="refetch" onClick={() => props.onSearch()}>
           <HiRefresh />
         </IconButton>
         <Button onClick={() => goToNewAdmissionPage()}>Nova Admissão</Button>
