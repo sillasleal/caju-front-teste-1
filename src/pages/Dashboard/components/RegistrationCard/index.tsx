@@ -43,24 +43,31 @@ const RegistrationCard = ({ data, onUpdate }: Props) => {
         <span>{data.admissionDate}</span>
       </S.IconAndText>
       <S.Actions>
-        <ButtonSmall
-          bgcolor="rgb(255, 145, 154)"
-          onClick={() => updateStatus(IStatus.REPROVED)}
-        >
-          Reprovar
-        </ButtonSmall>
-        <ButtonSmall
-          bgcolor="rgb(155, 229, 155)"
-          onClick={() => updateStatus(IStatus.APPROVED)}
-        >
-          Aprovar
-        </ButtonSmall>
-        <ButtonSmall
-          bgcolor="#ff8858"
-          onClick={() => updateStatus(IStatus.REVIEW)}
-        >
-          Revisar novamente
-        </ButtonSmall>
+        {data.status === IStatus.REVIEW && (
+          <ButtonSmall
+            bgcolor="rgb(255, 145, 154)"
+            onClick={() => updateStatus(IStatus.REPROVED)}
+          >
+            Reprovar
+          </ButtonSmall>
+        )}
+        {data.status === IStatus.REVIEW && (
+          <ButtonSmall
+            bgcolor="rgb(155, 229, 155)"
+            onClick={() => updateStatus(IStatus.APPROVED)}
+          >
+            Aprovar
+          </ButtonSmall>
+        )}
+        {(data.status === IStatus.APPROVED ||
+          data.status === IStatus.REPROVED) && (
+          <ButtonSmall
+            bgcolor="#ff8858"
+            onClick={() => updateStatus(IStatus.REVIEW)}
+          >
+            Revisar novamente
+          </ButtonSmall>
+        )}
 
         <HiOutlineTrash onClick={onDelete} aria-label="delete" />
       </S.Actions>
