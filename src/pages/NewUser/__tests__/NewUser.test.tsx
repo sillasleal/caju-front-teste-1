@@ -197,6 +197,7 @@ describe("NewUser", () => {
       await userEvent.type(cpfInput, user.cpf);
 
       await userEvent.click(screen.getByText("Cadastrar"));
+      await userEvent.click(screen.getByText("Confirmar"));
 
       expect(global.fetch).toHaveBeenCalledWith(
         "http://localhost:3000/registrations",
