@@ -9,10 +9,11 @@ import * as S from "./styles";
 import { useCallback, useEffect } from "react";
 import { formatCPF } from "~/utils/format";
 import { validateCPF } from "~/utils/validate";
-import { saveUser } from "~/services/user.service";
 import { IUser } from "~/models/user.model";
+import useApi from "~/hooks/useApi";
 
 const NewUserPage = () => {
+  const { saveUser } = useApi();
   const history = useHistory();
   const {
     register,
@@ -27,7 +28,7 @@ const NewUserPage = () => {
     saveUser(data).then(() => {
       history.push(routes.dashboard);
     });
-  }, [history]);
+  }, [history, saveUser]);
 
   const goToHome = () => {
     history.push(routes.dashboard);

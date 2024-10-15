@@ -1,12 +1,10 @@
 import { HashRouter, useHistory } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import NewUser from "..";
 import { act } from "react";
 import routes from "~/router/routes";
-import { saveUser } from "~/services/user.service";
 
-jest.mock("~/services/user.service");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: jest.fn(),
@@ -19,6 +17,10 @@ const NewUserPage = () => (
 );
 
 describe("NewUser", () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -32,7 +34,7 @@ describe("NewUser", () => {
     expect(screen.getByText("Cadastrar")).toBeInTheDocument();
   });
 
-  it("sould call history when click on back button", async () => {
+  it("should call history when click on back button", async () => {
     const historyMock = { push: jest.fn() };
     (useHistory as jest.Mock).mockReturnValue(historyMock);
 
@@ -169,13 +171,16 @@ describe("NewUser", () => {
         admissionDate: "",
       };
 
-      (saveUser as jest.Mock).mockResolvedValueOnce({
-        id: 1,
-        employeeName: "Test User",
-        email: "test@test.com",
-        cpf: "123.456.789-00",
-        admissionDate: "",
-        status: "REVIEW",
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 1,
+          employeeName: "Test User",
+          email: "test@test.com",
+          cpf: "123.456.789-00",
+          admissionDate: "",
+          status: "REVIEW",
+        }),
       });
 
       const historyMock = { push: jest.fn() };
@@ -193,8 +198,17 @@ describe("NewUser", () => {
 
       await userEvent.click(screen.getByText("Cadastrar"));
 
-      expect(historyMock.push).toHaveBeenCalledWith(routes.dashboard);
-      expect(saveUser).toHaveBeenCalledWith(user);
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/registrations",
+        {
+          body: JSON.stringify({ ...user, status: "REVIEW" }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        }
+      );
+      await waitFor(() => {
+        expect(historyMock.push).toHaveBeenCalledWith(routes.dashboard);
+      }, { timeout: 3000 });
     });
   });
 });

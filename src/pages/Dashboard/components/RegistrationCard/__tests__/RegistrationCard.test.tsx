@@ -1,13 +1,21 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react";
-import RegistrationCard from "..";
+import RegistrationCard, { RegistrationCardProps } from "..";
 import { IStatus } from "~/models/status.model";
-import { updateUser, deleteUser } from "~/services/user.service";
+import LoadingProvider from "~/providers/loading.provider";
 
-jest.mock("~/services/user.service");
+const RegistrationCardTest = (props: RegistrationCardProps) => (
+  <LoadingProvider>
+    <RegistrationCard {...props} />
+  </LoadingProvider>
+);
 
 describe("RegistrationCard", () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -22,12 +30,15 @@ describe("RegistrationCard", () => {
       status: IStatus.REVIEW,
     };
 
-    (updateUser as jest.Mock).mockResolvedValueOnce(user);
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => user,
+    });
 
     const updateUserMock = jest.fn();
 
     await act(async () => {
-      render(<RegistrationCard data={user} onUpdate={updateUserMock} />);
+      render(<RegistrationCardTest data={user} onUpdate={updateUserMock} />);
     });
 
     const approveButton = screen.getByText("Aprovar");
@@ -48,12 +59,15 @@ describe("RegistrationCard", () => {
       status: IStatus.REVIEW,
     };
 
-    (deleteUser as jest.Mock).mockResolvedValueOnce(user);
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => user,
+    });
 
     const updateUserMock = jest.fn();
 
     await act(async () => {
-      render(<RegistrationCard data={user} onUpdate={updateUserMock} />);
+      render(<RegistrationCardTest data={user} onUpdate={updateUserMock} />);
     });
 
     const deleteButton = screen.getByLabelText("delete");
@@ -74,7 +88,7 @@ describe("RegistrationCard", () => {
       status: IStatus.REVIEW,
     };
 
-    render(<RegistrationCard data={user} onUpdate={jest.fn()} />);
+    render(<RegistrationCardTest data={user} onUpdate={jest.fn()} />);
     const approveButton = screen.queryByText("Aprovar");
     const disapproveButton = screen.queryByText("Reprovar");
     const reviewButton = screen.queryByText("Revisar novamente");
@@ -94,7 +108,7 @@ describe("RegistrationCard", () => {
       status: IStatus.APPROVED,
     };
 
-    render(<RegistrationCard data={user} onUpdate={jest.fn()} />);
+    render(<RegistrationCardTest data={user} onUpdate={jest.fn()} />);
     const approveButton = screen.queryByText("Aprovar");
     const disapproveButton = screen.queryByText("Reprovar");
     const reviewButton = screen.queryByText("Revisar novamente");

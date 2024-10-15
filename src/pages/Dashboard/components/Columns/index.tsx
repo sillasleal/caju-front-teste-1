@@ -13,6 +13,7 @@ type Props = {
   registrations?: IUser[];
   onUpdate: (user: IUser) => void;
 };
+
 const Collumns = (props: Props) => {
   return (
     <S.Container>

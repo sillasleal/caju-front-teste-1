@@ -8,25 +8,22 @@ import {
 } from "react-icons/hi";
 import { IUser } from "~/models/user.model";
 import { IStatus } from "~/models/status.model";
-import { useCallback } from "react";
-import { deleteUser, updateUser } from "~/services/user.service";
+import useApi from "~/hooks/useApi";
 
-type Props = {
+export type RegistrationCardProps = {
   data: IUser;
   onUpdate: (user: IUser) => void;
 };
 
-const RegistrationCard = ({ data, onUpdate }: Props) => {
-  const updateStatus = useCallback(
-    (status: IStatus) => {
-      updateUser({ ...data, status }).then(onUpdate);
-    },
-    [data, onUpdate]
-  );
+const RegistrationCard = ({ data, onUpdate }: RegistrationCardProps) => {
+  const { updateUser, deleteUser } = useApi();
+  const updateStatus = (status: IStatus) => {
+    updateUser({ ...data, status }).then(onUpdate);
+  };
 
-  const onDelete = useCallback(() => {
+  const onDelete = () => {
     deleteUser(data.id).then(onUpdate);
-  }, [data.id, onUpdate]);
+  };
 
   return (
     <S.Card>
