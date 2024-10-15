@@ -4,7 +4,9 @@ import { render, screen } from "@testing-library/react";
 import NewUser from "..";
 import { act } from "react";
 import routes from "~/router/routes";
+import { saveUser } from "~/services/user.service";
 
+jest.mock("~/services/user.service");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: jest.fn(),
@@ -17,6 +19,10 @@ const NewUserPage = () => (
 );
 
 describe("NewUser", () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it("should render", () => {
     render(<NewUserPage />);
     expect(screen.getByText("Nome")).toBeInTheDocument();
@@ -151,6 +157,44 @@ describe("NewUser", () => {
       await userEvent.click(screen.getByText("Cadastrar"));
 
       expect(await screen.queryByText("CPF invalido")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Save user", () => {
+    it("should call save user when all fields are valid, after that, redirect to dashboard", async () => {
+      const user = {
+        employeeName: "Test Save User",
+        email: "test@test.com",
+        cpf: "123.456.789-09",
+        admissionDate: "",
+      };
+
+      (saveUser as jest.Mock).mockResolvedValueOnce({
+        id: 1,
+        employeeName: "Test User",
+        email: "test@test.com",
+        cpf: "123.456.789-00",
+        admissionDate: "",
+        status: "REVIEW",
+      });
+
+      const historyMock = { push: jest.fn() };
+      (useHistory as jest.Mock).mockReturnValue(historyMock);
+
+      render(<NewUserPage />);
+
+      const nameInput = screen.getByLabelText("Nome");
+      const emailInput = screen.getByLabelText("Email");
+      const cpfInput = screen.getByLabelText("CPF");
+
+      await userEvent.type(nameInput, user.employeeName);
+      await userEvent.type(emailInput, user.email);
+      await userEvent.type(cpfInput, user.cpf);
+
+      await userEvent.click(screen.getByText("Cadastrar"));
+
+      expect(historyMock.push).toHaveBeenCalledWith(routes.dashboard);
+      expect(saveUser).toHaveBeenCalledWith(user);
     });
   });
 });

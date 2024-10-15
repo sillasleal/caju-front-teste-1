@@ -6,15 +6,11 @@ import Button from "~/components/Buttons";
 import { IconButton } from "~/components/Buttons/IconButton";
 import routes from "~/router/routes";
 import * as S from "./styles";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { formatCPF } from "~/utils/format";
 import { validateCPF } from "~/utils/validate";
-
-type FormData = {
-  employeeName: string;
-  email: string;
-  cpf: string;
-};
+import { saveUser } from "~/services/user.service";
+import { IUser } from "~/models/user.model";
 
 const NewUserPage = () => {
   const history = useHistory();
@@ -24,10 +20,15 @@ const NewUserPage = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<IUser>();
   const cpfValue = watch("cpf");
 
-  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<IUser> = useCallback((data) => {
+    saveUser(data).then(() => {
+      history.push(routes.dashboard);
+    });
+  }, [history]);
+
   const goToHome = () => {
     history.push(routes.dashboard);
   };
@@ -84,7 +85,12 @@ const NewUserPage = () => {
               : errors.cpf?.message
           }
         />
-        <TextField label="Data de admissão" type="date" />
+        <TextField
+          id="admissionDate"
+          label="Data de admissão"
+          type="date"
+          {...register("admissionDate")}
+        />
         <Button onClick={handleSubmit(onSubmit)}>Cadastrar</Button>
       </S.Card>
     </S.Container>
